@@ -1,83 +1,85 @@
 {
-  "name": "snake-trail",
-  "description": "Shows a snake trail for your edited text",
-  "version": "0.0.1",
-  "publisher": "richie5um2",
-  "author": "Rich Somerfield",
-  "license": "MIT",
-  "homepage": "https://github.com/richie5um/vscode-snake-trail",
-  "repository": {
-      "type": "git",
-      "url": "https://github.com/richie5um/vscode-snake-trail"
-  },
-  "bugs": {
-      "url": "https://github.com/richie5um/vscode-snake-trail/issues"
-  },
-  "engines": {
-    "vscode": "0.10.x"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./out/extension",
-  "scripts": {
-    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
-    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
-  },
-  "devDependencies": {
-    "vscode": "0.10.x",
-    "typescript": "^1.6.2"
-  },
-  "dependencies": {
-    "lodash": "^4.15.0"
-  },
-  "contributes": {
-      "commands": [
-          {
-              "command": "snakeTrail.enable",
-              "title": "SnakeTrail Enable"
-          },
-          {
-              "command": "snakeTrail.disable",
-              "title": "SnakeTrail Disable"
-          },
-          {
-              "command": "snakeTrail.refresh",
-              "title": "SnakeTrail Refresh (re-read configuration)"
-          }
-      ],
-      "configuration": {
-          "type": "object",
-          "properties": {
-              "snakeTrail.enabled": {
-                  "type": "boolean",
-                  "default": true,
-                  "description": "Enable/disable SnakeTrail"
-              },
-              "snakeTrail.color": {
-                  "type": "string",
-                  "default": "0,255,0",
-                  "description": "Set the color of the snake trail (i.e. in R,G,B format)"
-              },
-              "snakeTrail.colorLight": {
-                  "type": "string",
-                  "default": null,
-                  "description": "Set the color of the snake trail for light themes, overrides snakeColor"
-              },
-              "snakeTrail.colorDark": {
-                  "type": "string",
-                  "default": null,
-                  "description": "Set the color of the snake trail for dark themes, overrides snakeColor"
-              },
-              "snakeTrail.fadeMS": {
-                  "type": "number",
-                  "default": 100,
-                  "description": "Set the fade out rate of the trail (in milliseconds)"
-              }
-          }
-      }
+    "name": "snake-trail",
+    "description": "Shows a snake trail for your edited text",
+    "version": "0.1.0",
+    "publisher": "richie5um2",
+    "author": "Rich Somerfield",
+    "license": "MIT",
+    "displayName": "Snake Trail",
+    "icon": "resources/icon.svg",
+    "homepage": "https://github.com/richie5um/vscode-snake-trail",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/richie5um/vscode-snake-trail"
+    },
+    "bugs": {
+        "url": "https://github.com/richie5um/vscode-snake-trail/issues"
+    },
+    "engines": {
+        "vscode": "0.10.x"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/extension",
+    "scripts": {
+        "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+        "compile": "node ./node_modules/vscode/bin/compile -watch -p ./"
+    },
+    "devDependencies": {
+        "vscode": "0.10.x",
+        "typescript": "^1.6.2"
+    },
+    "dependencies": {
+        "lodash": "^4.15.0"
+    },
+    "contributes": {
+        "commands": [
+            {
+                "command": "snakeTrail.enable",
+                "title": "SnakeTrail Enable"
+            },
+            {
+                "command": "snakeTrail.disable",
+                "title": "SnakeTrail Disable"
+            },
+            {
+                "command": "snakeTrail.refresh",
+                "title": "SnakeTrail Refresh (re-read configuration)"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "properties": {
+                "snakeTrail.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable/disable SnakeTrail"
+                },
+                "snakeTrail.color": {
+                    "type": "string",
+                    "default": "0,255,0",
+                    "description": "Set the color of the snake trail (i.e. in R,G,B format)"
+                },
+                "snakeTrail.colorLight": {
+                    "type": "string",
+                    "default": null,
+                    "description": "Set the color of the snake trail for light themes, overrides snakeColor"
+                },
+                "snakeTrail.colorDark": {
+                    "type": "string",
+                    "default": null,
+                    "description": "Set the color of the snake trail for dark themes, overrides snakeColor"
+                },
+                "snakeTrail.fadeMS": {
+                    "type": "number",
+                    "default": 100,
+                    "description": "Set the fade out rate of the trail (in milliseconds)"
+                }
+            }
+        }
     }
 }
