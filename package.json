@@ -1,7 +1,7 @@
 {
     "name": "snake-trail",
     "description": "Shows a snake trail for your edited text",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "publisher": "richie5um2",
     "author": "Rich Somerfield",
     "license": "MIT",
@@ -86,7 +86,7 @@
                 },
                 "snakeTrail.fadeEnd": {
                     "type": "number",
-                    "default": 0.0,
+                    "default": 0,
                     "description": "Set the fade end opacity (i.e. 0.0)"
                 },
                 "snakeTrail.fadeStep": {
