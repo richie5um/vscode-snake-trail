@@ -10,10 +10,12 @@ interface SnakeRange {
 	text: string
 };
 
+let activeEditor
 let snakeOptions;
-var snakeRanges: Array<SnakeRange> = [];
-var opacities = ['0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1'].reverse();
-var snakeDecorations;
+let queuedTimeout;
+let snakeRanges: Array<SnakeRange> = [];
+let opacities = ['0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1'].reverse();
+let snakeDecorations;
 
 export function enable() {
 	initialiseSnakeTrail();
@@ -22,6 +24,12 @@ export function enable() {
 
 export function disable() {
 	snakeOptions.enabled = false;
+	snakeRanges = [];
+	snakeDecorations.forEach((snakeDecoration) => {
+		if (activeEditor) {
+			activeEditor.setDecorations(snakeDecoration, []);
+		}
+	});
 }
 
 export function refresh() {
@@ -29,12 +37,12 @@ export function refresh() {
 }
 
 function initialiseSnakeTrail() {
-	var snakeOptionsOverrides = vscode.workspace.getConfiguration('snakeTrail');
+	let snakeOptionsOverrides = vscode.workspace.getConfiguration('snakeTrail');
 	snakeOptions = _.clone(snakeOptionsOverrides);
 
 	// Create the decorators
 	let newSnakeDecorations = [];
-	for (var i = 0; i < opacities.length; ++i) {
+	for (let i = 0; i < opacities.length; ++i) {
 		newSnakeDecorations.push(
 			vscode.window.createTextEditorDecorationType({
 				light: {
@@ -64,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
 		context.subscriptions.push(command);
 	});
 
-	var activeEditor = vscode.window.activeTextEditor;
+	activeEditor = vscode.window.activeTextEditor;
 	if (activeEditor) {
 		triggerUpdateDecorations();
 	}
@@ -126,7 +134,10 @@ export function activate(context: vscode.ExtensionContext) {
 	var timeout = null;
 	function triggerUpdateDecorations() {
 		if (!timeout) {
+			queuedTimeout = false;
 			timeout = setTimeout(updateDecorations, 100);
+		} else {
+			queuedTimeout = true;
 		}
 	}
 
@@ -164,5 +175,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 		// Signal that we are done
 		timeout = null;
+		if (queuedTimeout) {
+			triggerUpdateDecorations();
+		}
 	}
 }
