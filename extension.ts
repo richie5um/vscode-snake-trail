@@ -1,65 +1,64 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as _ from 'lodash';
 
-// this method is called when vs code is activated
-export function activate(context: vscode.ExtensionContext) {
+interface SnakeRange {
+	opacity: number,
+	range: vscode.Range,
+	rangeLength: number,
+	text: string
+};
 
-	console.log('snake-trail is activated');
+let snakeOptions;
+var snakeRanges: Array<SnakeRange> = [];
+var opacities = ['0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1'].reverse();
+var snakeDecorations = [];
 
-	var ranges = [];
+export function enable() {
+	initialiseSnakeTrail();
+	snakeOptions.enabled = true;
+}
 
-	var opacities = ['ff', 'dd', 'bb', '99', '77', '55', '33', '11'].reverse();
-	//var opacities = ['ff', 'bb', '77', '33', '11'].reverse();
-	//var textOpacities = opacities.slice().reverse();
-	var textOpacities = ['ff', 'ff', 'ff', 'ff', '00', '00', '00', '00'];
+export function disable() {
+	snakeOptions.enabled = false;
+}
 
-	var snakeDecorations = [];
+export function refresh() {
+	initialiseSnakeTrail();
+}
+
+function initialiseSnakeTrail() {
+	var snakeOptionsOverrides = vscode.workspace.getConfiguration('snakeTrail');
+	snakeOptions = _.clone(snakeOptionsOverrides);
+
+	// Create the decorators
 	for (var i = 0; i < opacities.length; ++i) {
 		snakeDecorations.push(
 			vscode.window.createTextEditorDecorationType({
 				light: {
-					backgroundColor: '#ffff00' + opacities[i]
-					//backgroundColor: '#ffff00ff'
+					backgroundColor: 'rgba('+ (snakeOptions.colorLight || snakeOptions.color) + ',' + opacities[i] + ')'
 				},
 				dark: {
-					backgroundColor: '#' + opacities[i] + opacities[i] + '00',
-					//backgroundColor: '#ffff00' + opacities[i],
-					//backgroundColor: '#ffff00ff',
-					color: '#' + textOpacities[i] + textOpacities[i] + textOpacities[i],
-					//color: '#000000'
+					backgroundColor: 'rgba('+ (snakeOptions.colorDark || snakeOptions.color) + ',' + opacities[i] + ')'
 				}
 			})
 		);
 	}
+}
 
-	var snakeDecorationType = vscode.window.createTextEditorDecorationType({
-		light: {
-			backgroundColor: '#ffff00'
-		},
-		dark: {
-			backgroundColor: '#ffff00',
-			color: '#000000'
-		}
-		//backgroundColor: 'rgba(255,0,0,1.0); -webkit-transition: background-color 5s ease-in-out;',
+// this method is called when vs code is activated
+export function activate(context: vscode.ExtensionContext) {
+	console.log('snake-trail is activated');
+	initialiseSnakeTrail();
 
-		//borderWidth: '0px; background-color: rgba(255,0,0,1.0); transition: all 2s ease;'
-		//borderWidth: '1px',
-		// borderStyle: 'solid',
-		// overviewRulerColor: 'blue',
-		// overviewRulerLane: vscode.OverviewRulerLane.Right,
-		// light: {
-		// 	//color: '#00ff00; font-weight: bold'
-		// 	//color: '#00ff00 !important; -webkit-transition: borderColor 5s ease-in-out !important;',
-		// 	//color: '#00ff00 !important; opacity: 0.1; -webkit-transition: opacity 5s ease-in-out !important;',
-		// 	//borderColor: 'darkblue'
-		// },
-		// dark: {
-		// 	//color: '#00ff00; font-weight: bold'
-		// 	//color: '#00ff00 !important; opacity: 0; -webkit-transition: borderColor 5s ease-in-out !important;',
-		// 	//color: '#00ff00 !important; opacity: 0.1; -webkit-transition: opacity 5s ease-in-out !important;',
-		// 	//borderColor: 'lightblue'
-		// }
+	var commands = [
+		vscode.commands.registerCommand('snakeTrail.enable', enable),
+		vscode.commands.registerCommand('snakeTrail.disable', disable)
+	];
+
+	commands.forEach(function (command) {
+		context.subscriptions.push(command);
 	});
 
 	var activeEditor = vscode.window.activeTextEditor;
@@ -67,9 +66,10 @@ export function activate(context: vscode.ExtensionContext) {
 		triggerUpdateDecorations();
 	}
 
+	// Register for Active Editor changes
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		if (activeEditor !== editor) {
-			ranges = [];
+			snakeRanges = [];
 		}
 
 		activeEditor = editor;
@@ -78,76 +78,86 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, null, context.subscriptions);
 
+	// Register for Text Editor changes
 	vscode.workspace.onDidChangeTextDocument(event => {
-		if (activeEditor && event.document === activeEditor.document) {
+		if (activeEditor && event.document === activeEditor.document && snakeOptions.enabled) {
 			event.contentChanges.forEach((contentChange) => {
-				console.log(contentChange.text);
-				if (0 === contentChange.rangeLength) {
-					contentChange.rangeLength = contentChange.text.length;
-					contentChange.range._end._character += contentChange.text.length;
-				}
-
-				//console.log(contentChange);
-				contentChange.range.opacity = opacities.length-1;
-				ranges.push(contentChange.range);
-
-				var fn = function () {
-					contentChange.range.opacity -= 1;
-					triggerUpdateDecorations();
-
-					if (0 <= contentChange.range.opacity) {
-						setTimeout(fn, 100 + (10 * Math.max(contentChange.rangeLength, 30)));
+				try {
+					// Ensure that the range covers the change
+					if (0 === contentChange.rangeLength) {
+						contentChange.rangeLength = contentChange.text.length;
+						contentChange.range = new vscode.Range(
+							contentChange.range.start,
+							new vscode.Position(contentChange.range.end.line, contentChange.range.end.character + contentChange.text.length)
+						);
 					}
-				};
-				setTimeout(fn, 100);
+
+					var snakeRange: SnakeRange = {
+						opacity: opacities.length - 1,
+						range: contentChange.range,
+						rangeLength: contentChange.rangeLength,
+						text: contentChange.text
+					};
+					snakeRanges.push(snakeRange);
+
+					// Create our animation logic
+					var fn = function () {
+						snakeRange.opacity -= 1;
+						triggerUpdateDecorations();
+
+						if (0 <= snakeRange.opacity) {
+							setTimeout(fn, snakeOptions.fadeMS + (10 * Math.max(snakeRange.rangeLength, 30)));
+						}
+					};
+					setTimeout(fn, snakeOptions.fadeMS);
+				} catch (err) {
+					console.log(err);
+				}
 			});
 
 			triggerUpdateDecorations();
 		}
 	}, null, context.subscriptions);
 
+	// Use a timer to avoid overloading the system
 	var timeout = null;
 	function triggerUpdateDecorations() {
-		// if (timeout) {
-		// 	clearTimeout(timeout);
-		// }
-
-		// timeout = setTimeout(updateDecorations, 100);
-
 		if (!timeout) {
 			timeout = setTimeout(updateDecorations, 100);
 		}
 	}
 
+	// Update the decorations
 	function updateDecorations() {
 		if (!activeEditor) {
 			return;
 		}
 
-		var prunedRanges = [];
+		// Create placeholder arrays (for each opacity level)
+		var prunedSnakeRanges: Array<Array<SnakeRange>> = [];
 		for (var i = 0; i < opacities.length; ++i) {
-			prunedRanges.push([]);
+			prunedSnakeRanges.push([]);
 		}
 
-		ranges.forEach((range) => {
-			if (0 < range.opacity) {
-				prunedRanges[range.opacity].push(range);
+		// Sort the snakeRanges into the correct array for their opacity level
+		snakeRanges.forEach((snakeRange) => {
+			if (0 < snakeRange.opacity) {
+				prunedSnakeRanges[snakeRange.opacity].push(snakeRange);
 			}
 		});
 
-		var _ranges = prunedRanges;
-
-		for (var i = 0; i < prunedRanges.length; ++i) {
+		// Add the ranges to the decorator
+		prunedSnakeRanges.forEach((snakeRanges, index) => {
 			var decorators: vscode.DecorationOptions[] = [];
-			prunedRanges[i].forEach((range) => {
-				var decoration = { range: range, hoverMessage: '.' };
+			snakeRanges.forEach((snakeRange) => {
+				var decoration = { range: snakeRange.range, hoverMessage: snakeRange.text };
 				decorators.push(decoration);
 			});
 
-			activeEditor.setDecorations(snakeDecorations[i], decorators);
-		}
+			activeEditor.setDecorations(snakeDecorations[index], decorators);
+		});
 
+		// Signal that we are done
 		timeout = null;
 	}
 }
-
