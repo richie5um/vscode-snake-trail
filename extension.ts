@@ -54,7 +54,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	var commands = [
 		vscode.commands.registerCommand('snakeTrail.enable', enable),
-		vscode.commands.registerCommand('snakeTrail.disable', disable)
+		vscode.commands.registerCommand('snakeTrail.disable', disable),
+		vscode.commands.registerCommand('snakeTrail.refresh', refresh)
 	];
 
 	commands.forEach(function (command) {
