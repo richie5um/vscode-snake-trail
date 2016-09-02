@@ -33,3 +33,7 @@ If you want to re-read any configuration changes, disable then enable.
     * `"snakeTrail.colorDark": "0,255,0"`
 * You can modify the snake trail fade rate
     * `"snakeTrail.fadeMS": 100`
+
+# _Open Source_
+
+If you like but want to make changes/improvemnents, please submit PRs rather than forking.

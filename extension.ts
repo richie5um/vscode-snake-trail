@@ -13,7 +13,7 @@ interface SnakeRange {
 let snakeOptions;
 var snakeRanges: Array<SnakeRange> = [];
 var opacities = ['0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1'].reverse();
-var snakeDecorations = [];
+var snakeDecorations;
 
 export function enable() {
 	initialiseSnakeTrail();
@@ -33,8 +33,9 @@ function initialiseSnakeTrail() {
 	snakeOptions = _.clone(snakeOptionsOverrides);
 
 	// Create the decorators
+	let newSnakeDecorations = [];
 	for (var i = 0; i < opacities.length; ++i) {
-		snakeDecorations.push(
+		newSnakeDecorations.push(
 			vscode.window.createTextEditorDecorationType({
 				light: {
 					backgroundColor: 'rgba('+ (snakeOptions.colorLight || snakeOptions.color) + ',' + opacities[i] + ')'
@@ -45,6 +46,7 @@ function initialiseSnakeTrail() {
 			})
 		);
 	}
+	snakeDecorations = newSnakeDecorations;
 }
 
 // this method is called when vs code is activated
@@ -155,7 +157,9 @@ export function activate(context: vscode.ExtensionContext) {
 				decorators.push(decoration);
 			});
 
-			activeEditor.setDecorations(snakeDecorations[index], decorators);
+			if (null !== snakeDecorations && index < snakeDecorations.length) {
+				activeEditor.setDecorations(snakeDecorations[index], decorators);
+			}
 		});
 
 		// Signal that we are done

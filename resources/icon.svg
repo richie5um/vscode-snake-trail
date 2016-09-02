@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="128px" height="128px" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>Rectangle</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#181D26" x="0" y="0" width="128" height="128"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" x="80" y="25" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.8" x="60" y="25" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.6" x="40" y="25" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.4" x="20" y="25" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.2" x="0" y="25" width="20" height="30"></rect>
+        <text id="S" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="4" y="48">S</tspan>
+        </text>
+        <text id="a" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="44" y="48">a</tspan>
+        </text>
+        <text id="k" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="64" y="48">k</tspan>
+        </text>
+        <text id="e" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="84" y="48">e</tspan>
+        </text>
+        <text id="n" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="24" y="48">n</tspan>
+        </text>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.2" x="108" y="74" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.4" x="88" y="74" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.6" x="68" y="74" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" opacity="0.8" x="48" y="74" width="20" height="30"></rect>
+        <rect id="Rectangle-2" fill="#0DBE00" x="28" y="74" width="20" height="30"></rect>
+        <text id="T" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="32" y="97">T</tspan>
+        </text>
+        <text id="a" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="72" y="97">a</tspan>
+        </text>
+        <text id="i" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="92" y="97">i</tspan>
+        </text>
+        <text id="l" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="112" y="97">l</tspan>
+        </text>
+        <text id="r" font-family="Inconsolata-Regular, Inconsolata" font-size="24" font-weight="normal" fill="#FFFFFF">
+            <tspan x="52" y="97">r</tspan>
+        </text>
+    </g>
+</svg>
