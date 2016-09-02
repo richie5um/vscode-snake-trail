@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as _ from 'lodash';
 
 interface SnakeRange {
-	opacity: number,
+	opacityIndex: number,
 	range: vscode.Range,
 	rangeLength: number,
 	text: string
@@ -14,7 +14,7 @@ let activeEditor
 let snakeOptions;
 let queuedTimeout;
 let snakeRanges: Array<SnakeRange> = [];
-let opacities = ['0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1'].reverse();
+let opacities = [];
 let snakeDecorations;
 
 export function enable() {
@@ -36,25 +36,42 @@ export function refresh() {
 	initialiseSnakeTrail();
 }
 
-function initialiseSnakeTrail() {
-	let snakeOptionsOverrides = vscode.workspace.getConfiguration('snakeTrail');
-	snakeOptions = _.clone(snakeOptionsOverrides);
+function dpRounder(number) {
+	return Math.round( number * 100 ) / 100;
+}
 
-	// Create the decorators
-	let newSnakeDecorations = [];
-	for (let i = 0; i < opacities.length; ++i) {
-		newSnakeDecorations.push(
-			vscode.window.createTextEditorDecorationType({
-				light: {
-					backgroundColor: 'rgba('+ (snakeOptions.colorLight || snakeOptions.color) + ',' + opacities[i] + ')'
-				},
-				dark: {
-					backgroundColor: 'rgba('+ (snakeOptions.colorDark || snakeOptions.color) + ',' + opacities[i] + ')'
-				}
-			})
-		);
+function initialiseSnakeTrail() {
+	try {
+		let snakeOptionsOverrides = vscode.workspace.getConfiguration('snakeTrail');
+		snakeOptions = _.clone(snakeOptionsOverrides);
+
+		opacities = [];
+		let snakeFade = snakeOptions.fadeStart;
+		while (snakeFade >= snakeOptions.fadeEnd) {
+			opacities.push(snakeFade.toString());
+			snakeFade -= snakeOptions.fadeStep;
+			snakeFade = dpRounder(snakeFade);
+		}
+		opacities.reverse();
+
+		// Create the decorators
+		let newSnakeDecorations = [];
+		for (let i = 0; i < opacities.length; ++i) {
+			newSnakeDecorations.push(
+				vscode.window.createTextEditorDecorationType({
+					light: {
+						backgroundColor: 'rgba('+ (snakeOptions.colorLight || snakeOptions.color) + ',' + opacities[i] + ')'
+					},
+					dark: {
+						backgroundColor: 'rgba('+ (snakeOptions.colorDark || snakeOptions.color) + ',' + opacities[i] + ')'
+					}
+				})
+			);
+		}
+		snakeDecorations = newSnakeDecorations;
+	} catch(err) {
+		console.log(err);
 	}
-	snakeDecorations = newSnakeDecorations;
 }
 
 // this method is called when vs code is activated
@@ -104,7 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 
 					var snakeRange: SnakeRange = {
-						opacity: opacities.length - 1,
+						opacityIndex: opacities.length - 1,
 						range: contentChange.range,
 						rangeLength: contentChange.rangeLength,
 						text: contentChange.text
@@ -113,11 +130,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 					// Create our animation logic
 					var fn = function () {
-						snakeRange.opacity -= 1;
+						snakeRange.opacityIndex -= 1;
 						triggerUpdateDecorations();
 
-						if (0 <= snakeRange.opacity) {
-							setTimeout(fn, snakeOptions.fadeMS + (10 * Math.max(snakeRange.rangeLength, 30)));
+						if (0 <= snakeRange.opacityIndex) {
+							setTimeout(fn, 50 + snakeOptions.fadeMS + (10 * Math.max(snakeRange.rangeLength, 30)));
 						}
 					};
 					setTimeout(fn, snakeOptions.fadeMS);
@@ -135,7 +152,7 @@ export function activate(context: vscode.ExtensionContext) {
 	function triggerUpdateDecorations() {
 		if (!timeout) {
 			queuedTimeout = false;
-			timeout = setTimeout(updateDecorations, 100);
+			timeout = setTimeout(updateDecorations, 10);
 		} else {
 			queuedTimeout = true;
 		}
@@ -143,40 +160,44 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Update the decorations
 	function updateDecorations() {
-		if (!activeEditor) {
-			return;
-		}
-
-		// Create placeholder arrays (for each opacity level)
-		var prunedSnakeRanges: Array<Array<SnakeRange>> = [];
-		for (var i = 0; i < opacities.length; ++i) {
-			prunedSnakeRanges.push([]);
-		}
-
-		// Sort the snakeRanges into the correct array for their opacity level
-		snakeRanges.forEach((snakeRange) => {
-			if (0 < snakeRange.opacity) {
-				prunedSnakeRanges[snakeRange.opacity].push(snakeRange);
+		try {
+			if (!activeEditor) {
+				return;
 			}
-		});
 
-		// Add the ranges to the decorator
-		prunedSnakeRanges.forEach((snakeRanges, index) => {
-			var decorators: vscode.DecorationOptions[] = [];
+			// Create placeholder arrays (for each opacity level)
+			var prunedSnakeRanges: Array<Array<SnakeRange>> = [];
+			for (var i = 0; i < opacities.length; ++i) {
+				prunedSnakeRanges.push([]);
+			}
+
+			// Sort the snakeRanges into the correct array for their opacity level
 			snakeRanges.forEach((snakeRange) => {
-				var decoration = { range: snakeRange.range, hoverMessage: snakeRange.text };
-				decorators.push(decoration);
+				if (0 <= snakeRange.opacityIndex) {
+					prunedSnakeRanges[snakeRange.opacityIndex].push(snakeRange);
+				}
 			});
 
-			if (null !== snakeDecorations && index < snakeDecorations.length) {
-				activeEditor.setDecorations(snakeDecorations[index], decorators);
-			}
-		});
+			// Add the ranges to the decorator
+			prunedSnakeRanges.forEach((snakeRanges, index) => {
+				var decorators: vscode.DecorationOptions[] = [];
+				snakeRanges.forEach((snakeRange) => {
+					var decoration = { range: snakeRange.range, hoverMessage: snakeRange.text };
+					decorators.push(decoration);
+				});
 
-		// Signal that we are done
-		timeout = null;
-		if (queuedTimeout) {
-			triggerUpdateDecorations();
+				if (null !== snakeDecorations && index < snakeDecorations.length) {
+					activeEditor.setDecorations(snakeDecorations[index], decorators);
+				}
+			});
+
+			// Signal that we are done
+			timeout = null;
+			if (queuedTimeout) {
+				triggerUpdateDecorations();
+			}
+		} catch (err) {
+			console.log(err);
 		}
 	}
 }

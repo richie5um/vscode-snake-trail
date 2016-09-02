@@ -78,6 +78,21 @@
                     "type": "number",
                     "default": 100,
                     "description": "Set the fade out rate of the trail (in milliseconds)"
+                },
+                "snakeTrail.fadeStart": {
+                    "type": "number",
+                    "default": 0.7,
+                    "description": "Set the fade start opacity (i.e. 0.7)"
+                },
+                "snakeTrail.fadeEnd": {
+                    "type": "number",
+                    "default": 0.0,
+                    "description": "Set the fade end opacity (i.e. 0.0)"
+                },
+                "snakeTrail.fadeStep": {
+                    "type": "number",
+                    "default": 0.1,
+                    "description": "Set the fade step (i.e. 0.1)"
                 }
             }
         }
