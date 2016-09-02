@@ -134,7 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
 						triggerUpdateDecorations();
 
 						if (0 <= snakeRange.opacityIndex) {
-							setTimeout(fn, 50 + snakeOptions.fadeMS + (10 * Math.max(snakeRange.rangeLength, 30)));
+							setTimeout(fn, 50 + snakeOptions.fadeMS + (10 * Math.min(snakeRange.rangeLength, 30)));
 						}
 					};
 					setTimeout(fn, snakeOptions.fadeMS);
