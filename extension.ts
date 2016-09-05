@@ -113,11 +113,11 @@ export function activate(context: vscode.ExtensionContext) {
 				try {
 					// Ensure that the range covers the change
 					if (0 === contentChange.rangeLength) {
-						contentChange.rangeLength = contentChange.text.length;
-						contentChange.range = new vscode.Range(
-							contentChange.range.start,
-							new vscode.Position(contentChange.range.end.line, contentChange.range.end.character + contentChange.text.length)
-						);
+                        contentChange = {
+                          rangeLength: contentChange.text.length,
+                          range: new vscode.Range(contentChange.range.start, new vscode.Position(contentChange.range.end.line, contentChange.range.end.character + contentChange.text.length)),
+                          text: contentChange.text
+                        };
 					}
 
 					var snakeRange: SnakeRange = {
@@ -152,7 +152,7 @@ export function activate(context: vscode.ExtensionContext) {
 	function triggerUpdateDecorations() {
 		if (!timeout) {
 			queuedTimeout = false;
-			timeout = setTimeout(updateDecorations, 10);
+			timeout = setTimeout(updateDecorations, snakeOptions.redrawFrequency);
 		} else {
 			queuedTimeout = true;
 		}

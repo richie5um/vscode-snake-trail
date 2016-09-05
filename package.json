@@ -93,6 +93,11 @@
                     "type": "number",
                     "default": 0.1,
                     "description": "Set the fade step (i.e. 0.1)"
+                },
+                "snakeTrail.redrawFrequency": {
+                    "type": "number",
+                    "default": 10,
+                    "description": "Frequency that the redraw is performed - when trails are active"
                 }
             }
         }
