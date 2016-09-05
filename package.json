@@ -1,7 +1,7 @@
 {
     "name": "snake-trail",
     "description": "Shows a snake trail for your edited text",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "publisher": "richie5um2",
     "author": "Rich Somerfield",
     "license": "MIT",
