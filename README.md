@@ -43,4 +43,4 @@ If you want to re-read any configuration changes, disable then enable.
 
 # _Open Source_
 
-If you like but want to make changes/improvemnents, please submit PRs rather than forking.
+If you like but want to make changes/improvements, please submit PRs rather than forking.
